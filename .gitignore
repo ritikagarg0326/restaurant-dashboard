@@ -1,0 +1,31 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Node.js
+node_modules/
+npm-debug.log*
+
+# Docker
+.dockerignore
+
+# IDEs
+.vscode/
+.idea/
+
+# Terraform (if you're working on your DevOps projects)
+*.tfstate
+*.tfstate.backup
+.terraform/

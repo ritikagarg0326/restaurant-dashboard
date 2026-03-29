@@ -1,0 +1,86 @@
+from fastapi import APIRouter, Depends, Query, HTTPException
+from app.schemas.schemas import InventoryCreate, InventoryOut
+from app.core.database import get_db
+from app.api.v1.deps import require_manager, get_current_user
+from bson import ObjectId
+from typing import List, Optional
+from datetime import datetime
+
+router = APIRouter()
+
+def fmt_inv(i) -> InventoryOut:
+    return InventoryOut(
+        id=str(i["_id"]),
+        restaurant_id=str(i["restaurant_id"]),
+        date=i["date"],
+        items=i["items"],
+        created_at=i["created_at"]
+    )
+
+@router.post("/", response_model=InventoryOut)
+async def submit_inventory(data: InventoryCreate, current=Depends(require_manager)):
+    db = get_db()
+    rid = current.get("restaurant_id")
+    if not rid:
+        raise HTTPException(400, "Manager not assigned to restaurant")
+    
+    # Calculate consumption for each item
+    items = []
+    for item in data.items:
+        consumption = item.opening_stock + item.purchased_qty - item.closing_stock
+        items.append({
+            **item.dict(),
+            "consumption": max(0, consumption),
+            "wastage": 0
+        })
+    
+    doc = {
+        "restaurant_id": rid,
+        "date": data.date,
+        "items": items,
+        "created_at": datetime.utcnow()
+    }
+    result = await db.inventory.insert_one(doc)
+    doc["_id"] = result.inserted_id
+    return fmt_inv(doc)
+
+@router.get("/", response_model=List[InventoryOut])
+async def list_inventory(
+    restaurant_id: Optional[str] = Query(None),
+    date: Optional[str] = Query(None),
+    current=Depends(get_current_user)
+):
+    db = get_db()
+    query = {}
+    if current["role"] == "manager":
+        query["restaurant_id"] = current.get("restaurant_id")
+    elif restaurant_id:
+        query["restaurant_id"] = ObjectId(restaurant_id)
+    if date:
+        query["date"] = date
+    
+    inv = await db.inventory.find(query).sort("date", -1).to_list(100)
+    return [fmt_inv(i) for i in inv]
+
+@router.get("/low-stock")
+async def low_stock_alerts(
+    restaurant_id: Optional[str] = Query(None),
+    threshold: float = Query(1.0),
+    current=Depends(get_current_user)
+):
+    db = get_db()
+    query = {}
+    if current["role"] == "manager":
+        query["restaurant_id"] = current.get("restaurant_id")
+    elif restaurant_id:
+        query["restaurant_id"] = ObjectId(restaurant_id)
+    
+    latest = await db.inventory.find(query).sort("date", -1).limit(1).to_list(1)
+    if not latest:
+        return []
+    
+    alerts = []
+    for item in latest[0]["items"]:
+        if item["closing_stock"] <= threshold:
+            alerts.append({"item": item["item_name"], "closing_stock": item["closing_stock"], "unit": item["unit"]})
+    return alerts
