@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """
-Seed the first admin user.
+Seed the first admin user (interactive, no hardcoded values)
 Usage: python seed_admin.py
 """
+
 import asyncio
+import sys
+import getpass
 from motor.motor_asyncio import AsyncIOMotorClient
 from passlib.context import CryptContext
 import os
@@ -13,37 +16,63 @@ load_dotenv()
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-ADMIN_NAME = os.getenv("ADMIN_NAME", "Super Admin")
-ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "vero@gmail.com")
-ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "Veronica123@")
 MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
 MONGO_DB = os.getenv("MONGO_DB", "restaurant_db")
 
+
 async def seed():
+    print("\n========== Admin Seeder ==========")
+
+    # 🔐 Take secure input
+    full_name = input("Enter admin full name  : ").strip()
+    email = input("Enter admin email      : ").strip().lower()
+    password = getpass.getpass("Enter admin password   : ")
+    confirm = getpass.getpass("Confirm admin password : ")
+
+    # ✅ Validation
+    if password != confirm:
+        print("❌ Passwords do not match. Aborting.")
+        sys.exit(1)
+
+    if len(password) < 8:
+        print("❌ Password must be at least 8 characters. Aborting.")
+        sys.exit(1)
+
+    # 🔗 DB connection
     client = AsyncIOMotorClient(MONGO_URI)
     db = client[MONGO_DB]
-    
-    existing = await db.users.find_one({"email": ADMIN_EMAIL.lower()})
+
+    # 🔍 Check existing user
+    existing = await db.users.find_one({"email": email})
     if existing:
-        print(f"⚠️  Admin already exists: {ADMIN_EMAIL}")
+        print(f"⚠️  User with email '{email}' already exists. Aborting.")
         client.close()
-        return
-    
-    doc = {
-        "name": ADMIN_NAME,
-        "email": ADMIN_EMAIL.lower(),
-        "hashed_password": pwd_context.hash(ADMIN_PASSWORD),
+        sys.exit(1)
+
+    # 🔐 Hash password (bcrypt limit safe)
+    hashed_password = pwd_context.hash(password[:72])
+
+    # 📦 Create admin
+    admin_user = {
+        "name": full_name,
+        "email": email,
+        "hashed_password": hashed_password,
         "role": "admin",
         "restaurant_id": None,
         "is_active": True
     }
-    result = await db.users.insert_one(doc)
-    print(f"✅ Admin created!")
+
+    result = await db.users.insert_one(admin_user)
+
+    print(f"\n✅ Admin created successfully")
     print(f"   ID    : {result.inserted_id}")
-    print(f"   Email : {ADMIN_EMAIL}")
-    print(f"   Pass  : {ADMIN_PASSWORD}")
-    print(f"\n⚠️  Change the password after first login!")
+    print(f"   Name  : {full_name}")
+    print(f"   Email : {email}")
+    print(f"   Role  : admin")
+    print("==================================\n")
+
     client.close()
+
 
 if __name__ == "__main__":
     asyncio.run(seed())
