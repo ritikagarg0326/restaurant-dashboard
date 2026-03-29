@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter, Subject, takeUntil } from 'rxjs';
 import { ApiService } from '../../shared/services/api.service';
 import { Restaurant, User } from '../../shared/models/models';
 
@@ -20,6 +22,7 @@ import { Restaurant, User } from '../../shared/models/models';
 
       <div *ngIf="success" class="alert alert-success">✅ {{ success }}</div>
       <div *ngIf="error" class="alert alert-danger">⚠️ {{ error }}</div>
+      <div *ngIf="loading" class="alert alert-info">Loading restaurants...</div>
 
       <!-- Cards Grid -->
       <div class="restaurant-grid">
@@ -118,27 +121,54 @@ import { Restaurant, User } from '../../shared/models/models';
     .rc-actions { border-top: 1px solid var(--border); padding-top: 14px; }
   `]
 })
-export class RestaurantsComponent implements OnInit {
+export class RestaurantsComponent implements OnInit, OnDestroy {
   restaurants: Restaurant[] = [];
   managers: User[] = [];
   showModal = false;
   showAssign = false;
   saving = false;
+  loading = false;
   success = '';
   error = '';
   form = { name: '', address: '', phone: '' };
   assignTarget: Restaurant | null = null;
   assignUserId = '';
+  private destroy$ = new Subject<void>();
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private router: Router) {}
 
   ngOnInit() {
     this.loadAll();
     this.api.getUsers().subscribe(u => this.managers = u);
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      if (this.router.url.includes('/admin/restaurants')) {
+        this.loadAll();
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadAll() {
-    this.api.getRestaurants().subscribe(r => this.restaurants = r);
+    this.error = '';
+    this.loading = true;
+    this.api.getRestaurants().subscribe({
+      next: r => {
+        this.restaurants = r;
+        this.loading = false;
+      },
+      error: err => {
+        this.loading = false;
+        this.error = err.error?.detail || 'Failed to load restaurants';
+        console.error('Restaurants load failed', err);
+      }
+    });
   }
 
   closeModal(e: MouseEvent) {
@@ -149,14 +179,16 @@ export class RestaurantsComponent implements OnInit {
   }
 
   createRestaurant() {
+    this.error = '';
     if (!this.form.name.trim()) { this.error = 'Name is required'; return; }
     this.saving = true;
     this.api.createRestaurant(this.form).subscribe({
-      next: () => {
+      next: restaurant => {
         this.saving = false;
         this.showModal = false;
         this.form = { name: '', address: '', phone: '' };
         this.success = 'Restaurant created!';
+        this.restaurants = [...this.restaurants, restaurant];
         this.loadAll();
         setTimeout(() => this.success = '', 3000);
       },

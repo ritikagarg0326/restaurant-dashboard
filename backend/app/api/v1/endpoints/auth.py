@@ -12,7 +12,7 @@ async def login(data: LoginRequest):
     if not user or not verify_password(data.password, user["hashed_password"]):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
     if not user.get("is_active"):
-        raise HTTPException(status_code=403, detail="Account disabled")
+        raise HTTPException(status_code=403, detail="Account disabled. Contact your admin to re-enable this manager account.")
     
     token = create_access_token({"sub": str(user["_id"]), "role": user["role"]})
     return TokenResponse(

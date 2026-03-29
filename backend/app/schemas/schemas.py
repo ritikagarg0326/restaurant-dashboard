@@ -77,6 +77,7 @@ class InventoryItem(BaseModel):
     purchased_qty: float = 0
     closing_stock: float
     cost_per_unit: float = 0
+    wastage: float = 0
 
 class InventoryCreate(BaseModel):
     date: str  # YYYY-MM-DD
@@ -90,6 +91,14 @@ class InventoryOut(BaseModel):
     created_at: datetime
 
 # ── Expense ───────────────────────────────────────────
+class WastageCreate(BaseModel):
+    date: str  # YYYY-MM-DD
+    item_name: str
+    unit: str
+    wastage_qty: float
+    cost_per_unit: float
+    notes: Optional[str] = None
+
 class ExpenseCreate(BaseModel):
     date: str  # YYYY-MM-DD
     category: str

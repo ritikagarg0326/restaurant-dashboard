@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter, Subject, takeUntil } from 'rxjs';
 import { ApiService } from '../../shared/services/api.service';
 import { User, Restaurant } from '../../shared/models/models';
 
@@ -20,6 +22,7 @@ import { User, Restaurant } from '../../shared/models/models';
 
       <div *ngIf="success" class="alert alert-success">✅ {{ success }}</div>
       <div *ngIf="error" class="alert alert-danger">⚠️ {{ error }}</div>
+      <div *ngIf="loading" class="alert alert-info">Loading managers...</div>
 
       <div class="card" style="padding:0">
         <div class="table-wrap">
@@ -120,24 +123,51 @@ import { User, Restaurant } from '../../shared/models/models';
     }
   `]
 })
-export class UsersComponent implements OnInit {
+export class UsersComponent implements OnInit, OnDestroy {
   users: User[] = [];
   restaurants: Restaurant[] = [];
   showModal = false;
   saving = false;
+  loading = false;
   success = '';
   error = '';
   form = { name: '', email: '', password: '', restaurant_id: '' };
+  private destroy$ = new Subject<void>();
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private router: Router) {}
 
   ngOnInit() {
     this.loadAll();
     this.api.getRestaurants().subscribe(r => this.restaurants = r);
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      if (this.router.url.includes('/admin/users')) {
+        this.loadAll();
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   loadAll() {
-    this.api.getUsers().subscribe(u => this.users = u);
+    this.error = '';
+    this.loading = true;
+    this.api.getUsers().subscribe({
+      next: u => {
+        this.users = u;
+        this.loading = false;
+      },
+      error: err => {
+        this.loading = false;
+        this.error = err.error?.detail || 'Failed to load managers';
+        console.error('Users load failed', err);
+      }
+    });
   }
 
   getRestaurantName(id?: string): string {
@@ -150,16 +180,29 @@ export class UsersComponent implements OnInit {
   }
 
   create() {
+    this.error = '';
     if (!this.form.name || !this.form.email || !this.form.password) {
       this.error = 'Name, email and password are required'; return;
     }
+    const payload: any = {
+      name: this.form.name,
+      email: this.form.email,
+      password: this.form.password,
+    };
+    if (this.form.restaurant_id) {
+      payload.restaurant_id = this.form.restaurant_id;
+    }
     this.saving = true;
-    this.api.createUser(this.form).subscribe({
-      next: () => {
-        this.saving = false; this.showModal = false;
+    this.api.createUser(payload).subscribe({
+      next: user => {
+        this.saving = false;
+        this.showModal = false;
         this.form = { name: '', email: '', password: '', restaurant_id: '' };
         this.success = 'Manager account created!';
-        this.loadAll();
+        this.users = [...this.users, user];
+        if (user.restaurant_id && !this.restaurants.find(r => r.id === user.restaurant_id)) {
+          this.api.getRestaurants().subscribe(r => this.restaurants = r);
+        }
         setTimeout(() => this.success = '', 3000);
       },
       error: err => { this.saving = false; this.error = err.error?.detail || 'Failed to create'; }

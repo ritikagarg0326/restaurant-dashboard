@@ -30,6 +30,7 @@ export const routes: Routes = [
       { path: 'dashboard', loadComponent: () => import('./manager/dashboard/manager-dashboard.component').then(m => m.ManagerDashboardComponent) },
       { path: 'orders', loadComponent: () => import('./manager/orders/orders.component').then(m => m.OrdersComponent) },
       { path: 'inventory', loadComponent: () => import('./manager/inventory/inventory.component').then(m => m.InventoryComponent) },
+      { path: 'wastage', loadComponent: () => import('./manager/wastage/wastage.component').then(m => m.WastageComponent) },
       { path: 'expenses', loadComponent: () => import('./manager/expenses/expenses.component').then(m => m.ExpensesComponent) }
     ]
   },

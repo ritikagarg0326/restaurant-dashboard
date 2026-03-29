@@ -1,7 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, NavigationEnd } from '@angular/router';
+import { forkJoin, Subject, filter, takeUntil } from 'rxjs';
 import { ApiService } from '../../shared/services/api.service';
 import { DailySummary, MonthlySummary, Order } from '../../shared/models/models';
 import Chart from 'chart.js/auto';
@@ -12,6 +13,7 @@ import Chart from 'chart.js/auto';
   imports: [CommonModule, FormsModule],
   template: `
     <div class="fade-in">
+      <div *ngIf="loading" class="alert alert-info">Loading dashboard...</div>
       <div class="page-header">
         <div>
           <h1>My Dashboard</h1>
@@ -35,7 +37,7 @@ import Chart from 'chart.js/auto';
         </div>
         <div class="stat-card" style="--accent-color:var(--info)">
           <div class="stat-label">Cash</div>
-          <div class="stat-value">₹{{ (daily.payment_breakdown?.['cash'] || 0) | number:'1.0-0' }}</div>
+          <div class="stat-value">₹{{ (daily.payment_breakdown['cash'] || 0) | number:'1.0-0' }}</div>
           <div class="stat-badge up">💵 Cash sales</div>
         </div>
         <div class="stat-card" style="--accent-color:var(--accent)">
@@ -135,12 +137,14 @@ import Chart from 'chart.js/auto';
     @media (max-width: 700px) { .monthly-row { grid-template-columns: 1fr; } }
   `]
 })
-export class ManagerDashboardComponent implements OnInit {
+export class ManagerDashboardComponent implements OnInit, OnDestroy {
   daily: DailySummary | null = null;
   monthly: MonthlySummary | null = null;
   recentOrders: Order[] = [];
+  loading = false;
   today = new Date().toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' });
   private chartInstance: any = null;
+  private destroy$ = new Subject<void>();
 
   get upiTotal(): number {
     if (!this.daily) return 0;
@@ -150,18 +154,45 @@ export class ManagerDashboardComponent implements OnInit {
 
   constructor(private api: ApiService, public router: Router) {}
 
-  ngOnInit() { this.loadAll(); }
+  ngOnInit() {
+    this.loadAll();
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd),
+      takeUntil(this.destroy$)
+    ).subscribe(() => {
+      if (this.router.url.includes('/manager/dashboard')) {
+        this.loadAll();
+      }
+    });
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   loadAll() {
+    this.loading = true;
     const todayStr = new Date().toISOString().split('T')[0];
     const now = new Date();
 
-    this.api.getDailySummary(todayStr).subscribe(d => this.daily = d);
-    this.api.getMonthlySummary(now.getFullYear(), now.getMonth() + 1).subscribe(m => {
-      this.monthly = m;
-      setTimeout(() => this.renderChart(), 100);
+    forkJoin({
+      daily: this.api.getDailySummary(todayStr),
+      monthly: this.api.getMonthlySummary(now.getFullYear(), now.getMonth() + 1),
+      recentOrders: this.api.getOrders({ date: todayStr })
+    }).subscribe({
+      next: ({ daily, monthly, recentOrders }) => {
+        this.daily = daily;
+        this.monthly = monthly;
+        this.recentOrders = recentOrders.slice(0, 10);
+        this.loading = false;
+        this.renderChart();
+      },
+      error: err => {
+        this.loading = false;
+        console.error('Dashboard load failed', err);
+      }
     });
-    this.api.getOrders({ date: todayStr }).subscribe(o => this.recentOrders = o.slice(0, 10));
   }
 
   getItemSummary(order: Order): string {

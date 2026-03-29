@@ -40,6 +40,7 @@ export interface InventoryItem {
   closing_stock: number;
   cost_per_unit: number;
   consumption?: number;
+  wastage?: number;
 }
 
 export interface Inventory {

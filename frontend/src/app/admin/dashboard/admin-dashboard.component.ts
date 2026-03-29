@@ -1,8 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ChangeDetectorRef, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../shared/services/api.service';
 import { Restaurant, MonthlySummary } from '../../shared/models/models';
+import Chart from 'chart.js/auto';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -77,7 +78,7 @@ import { Restaurant, MonthlySummary } from '../../shared/models/models';
           <div class="card chart-card">
             <div class="card-title">Daily Sales vs Expenses</div>
             <div class="chart-wrapper">
-              <canvas id="salesChart" width="600" height="260"></canvas>
+              <canvas #salesCanvas width="600" height="260"></canvas>
             </div>
           </div>
 
@@ -204,6 +205,7 @@ import { Restaurant, MonthlySummary } from '../../shared/models/models';
   `]
 })
 export class AdminDashboardComponent implements OnInit {
+  @ViewChild('salesCanvas') salesCanvas?: ElementRef<HTMLCanvasElement>;
   restaurants: Restaurant[] = [];
   summary: MonthlySummary | null = null;
   loading = false;
@@ -222,7 +224,7 @@ export class AdminDashboardComponent implements OnInit {
     return this.summary.total_sales / this.summary.total_orders;
   }
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
     this.api.getRestaurants().subscribe(r => { this.restaurants = r; });
@@ -236,7 +238,8 @@ export class AdminDashboardComponent implements OnInit {
         this.summary = s;
         this.buildExpenseCategories();
         this.loading = false;
-        setTimeout(() => this.renderChart(), 100);
+        this.cdr.detectChanges();
+        setTimeout(() => this.renderChart(), 0);
       },
       error: () => { this.loading = false; }
     });
@@ -254,10 +257,8 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   renderChart() {
-    const canvas = document.getElementById('salesChart') as HTMLCanvasElement;
+    const canvas = this.salesCanvas?.nativeElement;
     if (!canvas || !this.summary) return;
-    const Chart = (window as any).Chart;
-    if (!Chart) return;
     if (this.chartInstance) this.chartInstance.destroy();
     const data = this.summary.chart_data;
     this.chartInstance = new Chart(canvas, {
@@ -265,17 +266,41 @@ export class AdminDashboardComponent implements OnInit {
       data: {
         labels: data.map(d => d.date.slice(5)),
         datasets: [
-          { label: 'Sales', data: data.map(d => d.sales), backgroundColor: 'rgba(255,107,53,0.7)', borderRadius: 4 },
-          { label: 'Expenses', data: data.map(d => d.expenses), backgroundColor: 'rgba(255,94,125,0.5)', borderRadius: 4 }
+          {
+            label: 'Sales',
+            data: data.map(d => d.sales),
+            backgroundColor: 'rgba(255,107,53,0.9)',
+            borderColor: '#FF6B35',
+            borderWidth: 1,
+            borderRadius: 4
+          },
+          {
+            label: 'Expenses',
+            data: data.map(d => d.expenses),
+            backgroundColor: 'rgba(255,94,125,0.9)',
+            borderColor: '#FF5E7D',
+            borderWidth: 1,
+            borderRadius: 4
+          }
         ]
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
-        plugins: { legend: { labels: { color: '#8B90A7', font: { size: 11 } } } },
+        animation: { duration: 300 },
+        plugins: {
+          legend: { labels: { color: '#8B90A7', font: { size: 11 } } }
+        },
         scales: {
-          x: { ticks: { color: '#5A5F75', font: { size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
-          y: { ticks: { color: '#5A5F75', font: { size: 10 }, callback: (v: any) => '₹' + v }, grid: { color: 'rgba(255,255,255,0.04)' } }
+          x: {
+            ticks: { color: '#5A5F75', font: { size: 10 } },
+            grid: { color: 'rgba(255,255,255,0.04)' }
+          },
+          y: {
+            beginAtZero: true,
+            ticks: { color: '#5A5F75', font: { size: 10 }, callback: (v: any) => '₹' + v },
+            grid: { color: 'rgba(255,255,255,0.04)' }
+          }
         }
       }
     });
