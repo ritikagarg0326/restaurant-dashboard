@@ -23,6 +23,7 @@ export class ManagerShellComponent {
     { label: 'Dashboard',  icon: '📊', route: '/manager/dashboard' },
     { label: 'New Order',  icon: '🛒', route: '/manager/orders' },
     { label: 'Inventory',  icon: '📦', route: '/manager/inventory' },
+    { label: 'Wastage',    icon: '🥫', route: '/manager/wastage' },
     { label: 'Expenses',   icon: '💸', route: '/manager/expenses' }
   ];
 }

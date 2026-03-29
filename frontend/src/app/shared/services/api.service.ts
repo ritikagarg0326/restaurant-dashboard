@@ -49,6 +49,7 @@ export class ApiService {
     if (params?.date) p = p.set('date', params.date);
     return this.http.get<Inventory[]>(`${API}/inventory/`, { params: p });
   }
+  reportWastage(data: any): Observable<Inventory> { return this.http.post<Inventory>(`${API}/inventory/wastage`, data); }
   getLowStock(restaurantId?: string): Observable<any[]> {
     let p = new HttpParams();
     if (restaurantId) p = p.set('restaurant_id', restaurantId);
