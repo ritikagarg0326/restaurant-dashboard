@@ -15,15 +15,14 @@ async def connect_db():
     await db_instance.db.users.create_index("email", unique=True)
     await db_instance.db.restaurants.create_index("manager_id")
 
-    # Keep this (compound index is useful)
+    # ✅ Keep only important compound indexes
     await db_instance.db.orders.create_index([("restaurant_id", 1), ("created_at", -1)])
-
-    # ❌ Disabled (causing Railway disk issue)
-    # await db_instance.db.orders.create_index("created_at")
-
     await db_instance.db.inventory.create_index([("restaurant_id", 1), ("date", -1)])
     await db_instance.db.expenses.create_index([("restaurant_id", 1), ("date", -1)])
-    await db_instance.db.expenses.create_index("date")
+
+    # ❌ Disable these (causing disk issue)
+    # await db_instance.db.orders.create_index("created_at")
+    # await db_instance.db.expenses.create_index("date")
 
     print("✅ Connected to MongoDB")
 
