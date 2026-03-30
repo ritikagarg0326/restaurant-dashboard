@@ -2,8 +2,9 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User, Restaurant, Order, Inventory, Expense, DailySummary, MonthlySummary } from '../models/models';
+import { environment } from '../../../environments/environment';
 
-const API = 'http://localhost:8000/api/v1';
+const API = `${environment.apiBaseUrl}/api/v1`;
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {

@@ -3,8 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, tap } from 'rxjs';
 import { AuthState } from '../models/models';
+import { environment } from '../../../environments/environment';
 
-const API = 'http://localhost:8000/api/v1';
+const API = `${environment.apiBaseUrl}/api/v1`;
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
