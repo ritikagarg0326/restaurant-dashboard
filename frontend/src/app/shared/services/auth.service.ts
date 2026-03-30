@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { BehaviorSubject, tap } from 'rxjs';
 import { AuthState } from '../models/models';
 
-const API = 'http://localhost:8000/api/v1';
+const API = (window as any).__env?.apiUrl || 'http://localhost:8000/api/v1';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
