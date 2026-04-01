@@ -6,16 +6,20 @@ import { ApiService } from '../../shared/services/api.service';
 interface InvLine { item_name: string; unit: string; opening_stock: number; purchased_qty: number; closing_stock: number; cost_per_unit: number; }
 
 const DEFAULT_ITEMS: InvLine[] = [
-  { item_name: 'Refined Oil', unit: 'L', opening_stock: 0, purchased_qty: 0, closing_stock: 0, cost_per_unit: 0 },
-  { item_name: 'Maida', unit: 'kg', opening_stock: 0, purchased_qty: 0, closing_stock: 0, cost_per_unit: 0 },
-  { item_name: 'Atta', unit: 'kg', opening_stock: 0, purchased_qty: 0, closing_stock: 0, cost_per_unit: 0 },
-  { item_name: 'Garam Masala', unit: 'kg', opening_stock: 0, purchased_qty: 0, closing_stock: 0, cost_per_unit: 0 },
-  { item_name: 'Salt', unit: 'kg', opening_stock: 0, purchased_qty: 0, closing_stock: 0, cost_per_unit: 0 },
-  { item_name: 'Haldi', unit: 'kg', opening_stock: 0, purchased_qty: 0, closing_stock: 0, cost_per_unit: 0 },
-  { item_name: 'Degi Mirch', unit: 'kg', opening_stock: 0, purchased_qty: 0, closing_stock: 0, cost_per_unit: 0 },
+  { item_name: 'Paneer', unit: 'kg', opening_stock: 0, purchased_qty: 0, closing_stock: 0, cost_per_unit: 0 },
   { item_name: 'Milk', unit: 'L', opening_stock: 0, purchased_qty: 0, closing_stock: 0, cost_per_unit: 0 },
   { item_name: 'Butter', unit: 'kg', opening_stock: 0, purchased_qty: 0, closing_stock: 0, cost_per_unit: 0 },
+  { item_name: 'Garam Masala', unit: 'kg', opening_stock: 0, purchased_qty: 0, closing_stock: 0, cost_per_unit: 0 },
+  { item_name: 'Maida', unit: 'kg', opening_stock: 0, purchased_qty: 0, closing_stock: 0, cost_per_unit: 0 },
+  { item_name: 'Atta', unit: 'kg', opening_stock: 0, purchased_qty: 0, closing_stock: 0, cost_per_unit: 0 },
+  { item_name: 'Salt', unit: 'kg', opening_stock: 0, purchased_qty: 0, closing_stock: 0, cost_per_unit: 0 },
+  { item_name: 'Refined Oil', unit: 'L', opening_stock: 0, purchased_qty: 0, closing_stock: 0, cost_per_unit: 0 },
+  { item_name: 'Degi Mirch', unit: 'kg', opening_stock: 0, purchased_qty: 0, closing_stock: 0, cost_per_unit: 0 },
+  { item_name: 'Haldi', unit: 'kg', opening_stock: 0, purchased_qty: 0, closing_stock: 0, cost_per_unit: 0 },
   { item_name: 'Bread Crumbs', unit: 'kg', opening_stock: 0, purchased_qty: 0, closing_stock: 0, cost_per_unit: 0 },
+  { item_name: 'Cheese', unit: 'kg', opening_stock: 0, purchased_qty: 0, closing_stock: 0, cost_per_unit: 0 },
+  { item_name: 'Onion', unit: 'kg', opening_stock: 0, purchased_qty: 0, closing_stock: 0, cost_per_unit: 0 },
+  { item_name: 'Tomato', unit: 'kg', opening_stock: 0, purchased_qty: 0, closing_stock: 0, cost_per_unit: 0 },
 ];
 
 @Component({

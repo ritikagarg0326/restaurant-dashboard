@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../shared/services/api.service';
-import { Order } from '../../shared/models/models';
+import { MenuItem, Order } from '../../shared/models/models';
 
 interface OrderLine { name: string; quantity: number; price: number; }
 
@@ -37,10 +37,15 @@ interface OrderLine { name: string; quantity: number; price: number; }
             <div *ngFor="let line of lines; let i = index" class="item-row">
               <input
                 class="form-control"
+                [attr.list]="'menu-items-' + i"
                 [(ngModel)]="line.name"
+                (ngModelChange)="onLineNameChange(line)"
                 [name]="'item'+i"
-                placeholder="Item name (e.g. Pasta)"
+                placeholder="Item name (choose from menu)"
                 style="flex:2" />
+              <datalist [attr.id]="'menu-items-' + i">
+                <option *ngFor="let item of menuItems" [value]="item.name"></option>
+              </datalist>
               <input
                 class="form-control"
                 type="number"
@@ -182,6 +187,7 @@ export class OrdersComponent implements OnInit {
   success = false;
   error = '';
   lastAmount = 0;
+  menuItems: MenuItem[] = [];
   todayOrders: Order[] = [];
   todayDate = new Date().toLocaleDateString('en-IN');
 
@@ -199,7 +205,22 @@ export class OrdersComponent implements OnInit {
 
   constructor(private api: ApiService) {}
 
-  ngOnInit() { this.loadTodayOrders(); }
+  ngOnInit() {
+    this.loadMenu();
+    this.loadTodayOrders();
+  }
+
+  loadMenu() {
+    this.api.getMenu().subscribe(menu => this.menuItems = menu || []);
+  }
+
+  onLineNameChange(line: OrderLine) {
+    const match = this.menuItems.find(item => item.name.trim().toLowerCase() === line.name.trim().toLowerCase());
+    if (match) {
+      line.name = match.name;
+      line.price = match.price;
+    }
+  }
 
   addLine() { this.lines.push({ name: '', quantity: 1, price: 0 }); }
 

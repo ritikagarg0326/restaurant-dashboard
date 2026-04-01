@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;dc65c90c66494890ec658efa4d1d96cf96d617bcc0fb4c25490b0f5414ec3269;C:/Users/ritik/Downloads/restaurant-dashboard/frontend/src/app/manager/dashboard/manager-dashboard.component.ts"],
+  "sourcesContent": ["\n    .section-label {\n      font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;\n      text-transform: uppercase; color: var(--text-dim); margin-bottom: 12px;\n    }\n    .monthly-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }\n    .monthly-kpi { border: 1px solid var(--border); transition: border-color 0.2s; }\n    @media (max-width: 700px) { .monthly-row { grid-template-columns: 1fr; } }\n  "],
+  "mappings": ";AACI,CAAC;AACC,aAAW;AAAS,eAAa;AAAK,kBAAgB;AACtD,kBAAgB;AAAW,SAAO,IAAI;AAAa,iBAAe;AACpE;AACA,CAAC;AAAc,WAAS;AAAM,yBAAuB,OAAO,CAAC,EAAE;AAAM,OAAK;AAAM;AAChF,CAAC;AAAc,UAAQ,IAAI,MAAM,IAAI;AAAW,cAAY,aAAa;AAAM;AAC/E,QAAO,WAAY;AAAS,GAF3B;AAE0C,2BAAuB;AAAK;AAAE;",
+  "names": []
+}

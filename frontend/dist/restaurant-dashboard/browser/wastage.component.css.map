@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;bf1fde3c2fd8eda1f658ecad50109a43af9522fc666891ce509064ce843d96a0;C:/Users/ritik/Downloads/restaurant-dashboard/frontend/src/app/manager/wastage/wastage.component.ts"],
+  "sourcesContent": ["\n    .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }\n    .summary-row { display: flex; justify-content: space-between; align-items: center; margin-top: 18px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-card); }\n    .summary-value { font-weight: 700; font-family: var(--font-mono); }\n  "],
+  "mappings": ";AACI,CAAC;AAAY,WAAS;AAAM,yBAAuB,OAAO,QAAQ,EAAE,OAAO,KAAK,EAAE;AAAO,OAAK;AAAM;AACpG,CAAC;AAAc,WAAS;AAAM,mBAAiB;AAAe,eAAa;AAAQ,cAAY;AAAM,WAAS;AAAM,UAAQ,IAAI,MAAM,IAAI;AAAW,iBAAe,IAAI;AAAc,cAAY,IAAI;AAAY;AAClN,CAAC;AAAgB,eAAa;AAAK,eAAa,IAAI;AAAc;",
+  "names": []
+}

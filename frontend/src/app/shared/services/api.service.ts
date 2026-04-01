@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { User, Restaurant, Order, Inventory, Expense, DailySummary, MonthlySummary } from '../models/models';
+import { MenuItem, User, Restaurant, Order, Inventory, Expense, DailySummary, MonthlySummary } from '../models/models';
 import { environment } from '../../../environments/environment';
 
 const API = `${environment.apiBaseUrl}/api/v1`;
@@ -25,6 +25,7 @@ export class ApiService {
 
   // ── Orders ──
   createOrder(data: any): Observable<Order> { return this.http.post<Order>(`${API}/orders/`, data); }
+  getMenu(): Observable<MenuItem[]> { return this.http.get<MenuItem[]>(`${API}/orders/menu`); }
   getOrders(params?: { restaurant_id?: string; date?: string }): Observable<Order[]> {
     let p = new HttpParams();
     if (params?.restaurant_id) p = p.set('restaurant_id', params.restaurant_id);

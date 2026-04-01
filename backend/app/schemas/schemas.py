@@ -54,6 +54,10 @@ class OrderItem(BaseModel):
     quantity: int
     price: float
 
+class MenuItem(BaseModel):
+    name: str
+    price: float
+
 class OrderCreate(BaseModel):
     items: List[OrderItem]
     payment_mode: str  # cash, card, upi, zomato, swiggy

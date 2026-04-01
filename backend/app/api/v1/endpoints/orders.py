@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends, Query
-from app.schemas.schemas import OrderCreate, OrderOut
+from app.schemas.schemas import MenuItem, OrderCreate, OrderOut
 from app.core.database import get_db
+from app.core.menu import MENU_CATALOG, find_menu_item, apply_order_inventory
 from app.api.v1.deps import require_manager, get_current_user
 from bson import ObjectId
 from typing import List, Optional
@@ -24,13 +25,22 @@ def get_restaurant_id(current):
         return None  # admin can query any
     return current.get("restaurant_id")
 
+@router.get("/menu", response_model=List[MenuItem])
+async def get_menu():
+    return MENU_CATALOG
+
 @router.post("/", response_model=OrderOut)
 async def create_order(data: OrderCreate, current=Depends(require_manager)):
     db = get_db()
     rid = get_restaurant_id(current)
     if not rid:
         raise HTTPException(status_code=400, detail="Manager must be assigned to a restaurant")
-    
+
+    for item in data.items:
+        menu_item = find_menu_item(item.name)
+        if menu_item:
+            item.price = menu_item["price"]
+
     total = sum(item.quantity * item.price for item in data.items)
     doc = {
         "restaurant_id": rid,
@@ -43,6 +53,9 @@ async def create_order(data: OrderCreate, current=Depends(require_manager)):
     }
     result = await db.orders.insert_one(doc)
     doc["_id"] = result.inserted_id
+
+    await apply_order_inventory(db, rid, data.items)
+
     return fmt_order(doc)
 
 @router.get("/", response_model=List[OrderOut])
