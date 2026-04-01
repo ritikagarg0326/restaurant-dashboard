@@ -41,13 +41,12 @@ npm start
 
 ---
 
-## 🔐 Default Credentials
+## 🔐 Default Credentials Example
 
 | Role    | Email                    | Password     |
 |---------|--------------------------|--------------|
 | Admin   | admin@restaurant.com     | Admin@12345  |
 
-> ⚠️ Change the admin password immediately after first login.
 
 ---
 
