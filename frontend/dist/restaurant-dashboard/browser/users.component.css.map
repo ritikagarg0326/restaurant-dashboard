@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;58645eeb557394c03b81c7884cc8ebfb0192c7c063f7328b48b66853ff64b2a0;C:/Users/ritik/Downloads/restaurant-dashboard/frontend/src/app/admin/users/users.component.ts"],
+  "sourcesContent": ["\n    .user-cell { display: flex; align-items: center; gap: 10px; }\n    .user-av {\n      width: 30px; height: 30px;\n      border-radius: 50%;\n      background: var(--primary-muted);\n      color: var(--primary);\n      display: flex; align-items: center; justify-content: center;\n      font-weight: 700; font-size: 0.8rem;\n    }\n  "],
+  "mappings": ";AACI,CAAC;AAAY,WAAS;AAAM,eAAa;AAAQ,OAAK;AAAM;AAC5D,CAAC;AACC,SAAO;AAAM,UAAQ;AACrB,iBAAe;AACf,cAAY,IAAI;AAChB,SAAO,IAAI;AACX,WAAS;AAAM,eAAa;AAAQ,mBAAiB;AACrD,eAAa;AAAK,aAAW;AAC/B;",
+  "names": []
+}

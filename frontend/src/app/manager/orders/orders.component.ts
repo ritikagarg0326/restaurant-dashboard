@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../shared/services/api.service';
-import { Order } from '../../shared/models/models';
+import { Order, MenuItem } from '../../shared/models/models';
 
 interface OrderLine { name: string; quantity: number; price: number; }
 
@@ -38,7 +38,9 @@ interface OrderLine { name: string; quantity: number; price: number; }
               <input
                 class="form-control"
                 [(ngModel)]="line.name"
+                (ngModelChange)="onItemNameChange(line)"
                 [name]="'item'+i"
+                list="order-menu-items"
                 placeholder="Item name (e.g. Pasta)"
                 style="flex:2" />
               <input
@@ -64,6 +66,10 @@ interface OrderLine { name: string; quantity: number; price: number; }
                 style="flex-shrink:0">✕</button>
             </div>
           </div>
+
+          <datalist id="order-menu-items">
+            <option *ngFor="let item of menuItems" [value]="item.name"></option>
+          </datalist>
 
           <!-- Total -->
           <div class="order-total">
@@ -182,6 +188,7 @@ export class OrdersComponent implements OnInit {
   success = false;
   error = '';
   lastAmount = 0;
+  menuItems: MenuItem[] = [];
   todayOrders: Order[] = [];
   todayDate = new Date().toLocaleDateString('en-IN');
 
@@ -199,12 +206,33 @@ export class OrdersComponent implements OnInit {
 
   constructor(private api: ApiService) {}
 
-  ngOnInit() { this.loadTodayOrders(); }
+  ngOnInit() {
+    this.loadTodayOrders();
+    this.api.getMenu().subscribe(menu => this.menuItems = menu);
+  }
 
   addLine() { this.lines.push({ name: '', quantity: 1, price: 0 }); }
 
   removeLine(i: number) {
     if (this.lines.length > 1) this.lines.splice(i, 1);
+  }
+
+  onItemNameChange(line: OrderLine) {
+    const normalized = line.name.trim().toLowerCase();
+    if (!normalized) {
+      return;
+    }
+    const exact = this.menuItems.find(item => item.name.toLowerCase() === normalized);
+    if (exact) {
+      line.price = exact.price;
+      line.name = exact.name;
+      return;
+    }
+    const partial = this.menuItems.find(item => item.name.toLowerCase().startsWith(normalized));
+    if (partial) {
+      line.price = partial.price;
+      return;
+    }
   }
 
   loadTodayOrders() {
