@@ -12,14 +12,14 @@ async def seed():
     client = AsyncIOMotorClient(MONGO_URI)
     db = client[MONGO_DB]
 
-    email = "vero1919@gmail.com"
+    email = "vero1april@gmail.com"
 
     existing = await db.users.find_one({"email": email})
     if existing:
         print("Admin already exists")
         return
 
-    hashed_password = pwd_context.hash("vero@123")
+    hashed_password = pwd_context.hash("vero@1april")
 
     admin_user = {
         "name": "Admin",
