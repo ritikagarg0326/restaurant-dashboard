@@ -161,14 +161,40 @@ Full interactive docs: `http://localhost:8000/docs`
 
 ## 🔧 Environment Variables
 
+Local development should use a private `backend/.env` file. That file must not be committed to GitHub.
+
+1. Copy the example file:
+
+```bash
+cp backend/.env.example backend/.env
+```
+
+2. Update `backend/.env` with your local values:
+
 ```env
-# backend/.env
 MONGO_URI=mongodb://localhost:27017
 MONGO_DB=restaurant_db
 SECRET_KEY=your-super-secret-key-min-32-chars
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=480
+ALLOWED_ORIGINS=http://localhost:4200
 ```
+
+3. When deploying from GitHub, do not push `backend/.env`.
+   Instead, set these same values as environment variables in your deployment platform or GitHub Secrets.
+
+### GitHub / deployment setup
+
+- In GitHub, go to `Settings > Secrets and variables > Actions`
+- Add the following secrets:
+  - `MONGO_URI`
+  - `MONGO_DB`
+  - `SECRET_KEY`
+  - `ALGORITHM`
+  - `ACCESS_TOKEN_EXPIRE_MINUTES`
+  - `ALLOWED_ORIGINS`
+
+Then your deployment workflow can use those secrets without exposing them in source control.
 
 ---
 

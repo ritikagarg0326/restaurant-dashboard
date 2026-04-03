@@ -22,6 +22,11 @@ export interface OrderItem {
   price: number;
 }
 
+export interface MenuItem {
+  name: string;
+  price: number;
+}
+
 export interface Order {
   id: string;
   restaurant_id: string;

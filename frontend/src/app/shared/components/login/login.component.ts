@@ -19,7 +19,7 @@ import { AuthService } from '../../services/auth.service';
       <div class="login-card fade-in">
         <div class="login-brand">
           <div class="brand-icon">🍽️</div>
-          <h1>RestaurantOS</h1>
+          <h1>Son of Swaad Restaurant Dashboard</h1>
           <p>Multi-outlet management platform</p>
         </div>
 

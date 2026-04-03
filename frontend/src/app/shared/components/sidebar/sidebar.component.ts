@@ -18,7 +18,7 @@ export interface NavItem {
       <div class="sidebar-brand">
         <div class="brand-icon">🍽️</div>
         <div>
-          <div class="brand-name">RestaurantOS</div>
+          <div class="brand-name">Son of Swaad </div>
           <div class="brand-role">{{ role | titlecase }}</div>
         </div>
       </div>

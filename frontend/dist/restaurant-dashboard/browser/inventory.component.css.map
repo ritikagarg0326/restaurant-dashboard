@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": ["angular:styles/component:css;1b32a0ef89b5a4b64c3205076b9dbc72bd83765fb4fab7046480b35fdaff6dfa;C:/Users/ritik/Downloads/restaurant-dashboard/frontend/src/app/manager/inventory/inventory.component.ts"],
+  "sourcesContent": ["\n    .num-input { width: 90px; text-align: right; font-family: var(--font-mono); }\n    .consumption-val { font-family: var(--font-mono); font-size: 0.875rem; color: var(--success); font-weight: 600; }\n    .consumption-val.high { color: var(--warning); }\n    .hist-row { display: flex; align-items: center; gap: 16px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 0.875rem; }\n    .hist-row:last-child { border-bottom: none; }\n  "],
+  "mappings": ";AACI,CAAC;AAAY,SAAO;AAAM,cAAY;AAAO,eAAa,IAAI;AAAc;AAC5E,CAAC;AAAkB,eAAa,IAAI;AAAc,aAAW;AAAU,SAAO,IAAI;AAAY,eAAa;AAAK;AAChH,CADC,eACe,CAAC;AAAO,SAAO,IAAI;AAAY;AAC/C,CAAC;AAAW,WAAS;AAAM,eAAa;AAAQ,OAAK;AAAM,WAAS,KAAK;AAAG,iBAAe,IAAI,MAAM,IAAI;AAAW,aAAW;AAAU;AACzI,CADC,QACQ;AAAc,iBAAe;AAAM;",
+  "names": []
+}

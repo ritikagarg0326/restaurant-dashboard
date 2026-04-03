@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { User, Restaurant, Order, Inventory, Expense, DailySummary, MonthlySummary } from '../models/models';
+import { User, Restaurant, Order, Inventory, Expense, DailySummary, MonthlySummary, MenuItem } from '../models/models';
 
-const API = 'http://localhost:8000/api/v1';
+const API = (window as any).__env?.apiUrl || 'http://localhost:8000/api/v1';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -23,6 +23,7 @@ export class ApiService {
   }
 
   // ── Orders ──
+  getMenu(): Observable<MenuItem[]> { return this.http.get<MenuItem[]>(`${API}/orders/menu`); }
   createOrder(data: any): Observable<Order> { return this.http.post<Order>(`${API}/orders/`, data); }
   getOrders(params?: { restaurant_id?: string; date?: string }): Observable<Order[]> {
     let p = new HttpParams();

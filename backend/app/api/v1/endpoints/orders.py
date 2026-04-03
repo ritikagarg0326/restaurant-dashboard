@@ -2,8 +2,9 @@ from fastapi import APIRouter, HTTPException, Depends, Query
 from app.schemas.schemas import OrderCreate, OrderOut
 from app.core.database import get_db
 from app.api.v1.deps import require_manager, get_current_user
+from app.core.menu import find_menu_item, get_menu, get_ingredient_requirements
 from bson import ObjectId
-from typing import List, Optional
+from typing import List, Optional, Dict
 from datetime import datetime, date
 
 router = APIRouter()
@@ -30,20 +31,60 @@ async def create_order(data: OrderCreate, current=Depends(require_manager)):
     rid = get_restaurant_id(current)
     if not rid:
         raise HTTPException(status_code=400, detail="Manager must be assigned to a restaurant")
-    
-    total = sum(item.quantity * item.price for item in data.items)
+
+    items = []
+    for item in data.items:
+        menu_item = find_menu_item(item.name)
+        if menu_item:
+            items.append({
+                "name": menu_item["name"],
+                "quantity": item.quantity,
+                "price": float(menu_item["price"])
+            })
+        else:
+            items.append({
+                "name": item.name,
+                "quantity": item.quantity,
+                "price": item.price
+            })
+
+    total = sum(item["quantity"] * item["price"] for item in items)
     doc = {
         "restaurant_id": rid,
-        "items": [i.dict() for i in data.items],
+        "items": items,
         "total_amount": total,
         "payment_mode": data.payment_mode,
         "table_no": data.table_no,
         "notes": data.notes,
         "created_at": datetime.utcnow()
     }
+
+    requirements = get_ingredient_requirements(items)
+    if requirements:
+        latest = await db.inventory.find({"restaurant_id": ObjectId(rid)}).sort("date", -1).limit(1).to_list(1)
+        if latest:
+            inventory = latest[0]
+            lookup = {item["item_name"].strip().lower(): item for item in inventory["items"]}
+            changed = False
+            for ingredient, qty in requirements.items():
+                key = ingredient.strip().lower()
+                if key in lookup:
+                    inv_item = lookup[key]
+                    inv_item["closing_stock"] = max(0, inv_item.get("closing_stock", 0) - qty)
+                    inv_item["consumption"] = max(0, inv_item.get("opening_stock", 0) + inv_item.get("purchased_qty", 0) - inv_item["closing_stock"])
+                    changed = True
+            if changed:
+                await db.inventory.update_one({"_id": inventory["_id"]}, {"$set": {"items": inventory["items"]}})
+        else:
+            raise HTTPException(status_code=400, detail="No inventory snapshot found. Submit inventory first.")
+
     result = await db.orders.insert_one(doc)
     doc["_id"] = result.inserted_id
     return fmt_order(doc)
+
+@router.get("/menu")
+async def menu():
+    return get_menu()
 
 @router.get("/", response_model=List[OrderOut])
 async def list_orders(
