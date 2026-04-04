@@ -18,6 +18,11 @@ async def seed():
     if not email or not password:
         raise ValueError("Missing ADMIN_EMAIL or ADMIN_PASSWORD")
 
+    existing = await db.users.find_one({"email": email})
+    if existing:
+        print("Admin already exists")
+        return
+
     hashed_password = pwd_context.hash(password)
 
     admin_user = {
