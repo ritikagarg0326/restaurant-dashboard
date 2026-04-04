@@ -3,7 +3,10 @@
 Production-ready restaurant management system with real-time order tracking, inventory, expenses, and P&L analytics.
 
 ---
-
+<img src="images/railway-deploy-metric4.png" width="300"/>
+<img src="images/railway-deploy-metric1.png" width="300"/>
+<img src="images/railway-deploy-metric2.png" width="300"/>
+<img src="images/railway-deploy-metric3.png" width="300"/>
 ## 🚀 Quick Start (Local Dev)
 
 ### Prerequisites
