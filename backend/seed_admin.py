@@ -23,8 +23,6 @@ async def seed():
         print("Admin already exists")
         return
 
-    hashed_password = pwd_context.hash(password)
-
     admin_user = {
         "name": "Admin",
         "email": email,
