@@ -177,7 +177,7 @@ cp backend/.env.example backend/.env
 ```env
 MONGO_URI=mongodb://localhost:27017
 MONGO_DB=restaurant_db
-SECRET_KEY=your-super-secret-key-min-32-chars
+SECRET_KEY=your-super-secret-key7y879879s
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=480
 ALLOWED_ORIGINS=http://localhost:4200

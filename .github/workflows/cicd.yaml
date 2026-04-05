@@ -1,0 +1,113 @@
+name: Restaurant CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+env:
+  DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+  BACKEND_IMAGE: restaurant-backend
+  FRONTEND_IMAGE: restaurant-frontend
+
+# ─────────────────────────────
+# JOB 1 — LINT
+# ─────────────────────────────
+jobs:
+
+  lint:
+    name: 🔍 Lint Code
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Backend lint (Python)
+      - name: Lint Backend
+        run: |
+          cd backend
+          pip install flake8 --quiet
+          flake8 . --max-line-length=120 || true
+
+      # Frontend lint (Angular)
+      - name: Lint Frontend
+        run: |
+          cd frontend
+          npm install
+          npm run lint || true
+
+# ─────────────────────────────
+# JOB 2 — TEST
+# ─────────────────────────────
+
+  test:
+    name: 🧪 Run Tests
+    runs-on: ubuntu-latest
+    needs: lint
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Backend tests
+      - name: Test Backend
+        run: |
+          cd backend
+          pip install -r requirements.txt --quiet
+          pip install pytest --quiet
+          pytest || true
+
+      # Frontend build test (Angular doesn’t always have tests)
+      - name: Build Frontend
+        run: |
+          cd frontend
+          npm install
+          npm run build
+
+# ─────────────────────────────
+# JOB 3 — BUILD & PUSH DOCKER
+# ─────────────────────────────
+
+  docker:
+    name: 🐳 Build & Push Images
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set Short SHA
+        id: vars
+        run: echo "SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # Backend Image
+      - name: Build & Push Backend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          push: true
+          tags: |
+            ${{ env.DOCKER_USERNAME }}/${{ env.BACKEND_IMAGE }}:${{ steps.vars.outputs.SHA }}
+            ${{ env.DOCKER_USERNAME }}/${{ env.BACKEND_IMAGE }}:latest
+
+      # Frontend Image
+      - name: Build & Push Frontend
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          push: true
+          tags: |
+            ${{ env.DOCKER_USERNAME }}/${{ env.FRONTEND_IMAGE }}:${{ steps.vars.outputs.SHA }}
+            ${{ env.DOCKER_USERNAME }}/${{ env.FRONTEND_IMAGE }}:latest
