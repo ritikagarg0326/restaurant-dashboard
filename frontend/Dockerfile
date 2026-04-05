@@ -21,7 +21,7 @@ FROM nginx:alpine
 RUN rm -rf /usr/share/nginx/html/*
 
 # Copy Angular build output
-COPY --from=build /app/dist/restaurant-dashboard /usr/share/nginx/html
+COPY --from=build /app/dist/restaurant-dashboard/browser /usr/share/nginx/html
 
 # Expose port
 EXPOSE 80
