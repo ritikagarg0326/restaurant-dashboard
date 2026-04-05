@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User, Restaurant, Order, Inventory, Expense, DailySummary, MonthlySummary, MenuItem } from '../models/models';
 
-const API = (window as any).__env?.apiUrl || 'http://localhost:8000/api/v1';
+const API = (window as any).__env?.apiUrl || 'http://localhost:30009/api/v1';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
