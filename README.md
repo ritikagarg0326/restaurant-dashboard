@@ -1,4 +1,4 @@
-# 🍽️ RestaurantOS — Multi-Outlet Management Dashboard
+# 🍽️ RestaurantOS — Multi-Outlet Profit and Loss Management Dashboard
 
 Production-ready restaurant management system with real-time order tracking, inventory, expenses, and P&L analytics.
 
