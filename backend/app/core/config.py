@@ -1,15 +1,16 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
-    MONGO_URI: str
-    MONGO_DB: str
-    SECRET_KEY: str
+    MONGO_URI: str   # ✅ directly from env
+    MONGO_DB: str = "restaurant_db"
+    SECRET_KEY: str = "changeme"
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 480
-    ALLOWED_ORIGINS: str = "http://localhost:4200"
+    ALLOWED_ORIGINS: str = "*"
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        extra="ignore"
+    )
 
 settings = Settings()

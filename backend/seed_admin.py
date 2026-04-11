@@ -26,7 +26,7 @@ async def seed():
     admin_user = {
         "name": "Admin",
         "email": email,
-        "hashed_password": hashed_password,
+        "hashed_password": pwd_context.hash(password),
         "role": "admin",
         "restaurant_id": None,
         "is_active": True
@@ -34,7 +34,7 @@ async def seed():
 
     await db.users.insert_one(admin_user)
 
-    print("✅ Admin created: admin@restaurant.com / Admin@123")
+    print("✅ Admin created")
 
     client.close()
 
