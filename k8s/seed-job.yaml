@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: seed-admin
+  namespace: restaurant
+spec:
+  template:
+    spec:
+      containers:
+      - name: seed
+        image: restaurant-dashboard-backend:latest
+        command: ["python", "seed_admin.py"]
+        env:
+        - name: MONGO_URI
+          value: mongodb://mongo:27017
+        - name: ADMIN_EMAIL
+          value: myhp@123.com
+        - name: ADMIN_PASSWORD
+          value: myhp@123
+      restartPolicy: Never

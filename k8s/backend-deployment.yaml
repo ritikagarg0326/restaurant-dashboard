@@ -24,7 +24,5 @@ spec:
               value: restaurant_db
             - name: SECRET_KEY
               value: mysecret123
-            - name: ALLOWED_ORIGINS
-              value: http://localhost:8080,http://127.0.0.1:8080
             - name: ADMIN_PASSWORD
               value: myhp@123

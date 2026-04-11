@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-seed-admin
+spec:
+  template:
+    spec:
+      containers:
+      - name: seed
+        image: {{ .Values.backend.image }}:{{ .Values.backend.tag }}
+        command: ["python", "seed_admin.py"]
+        env:
+        - name: MONGO_URI
+          value: {{ .Values.env.MONGO_URI }}
+        - name: ADMIN_EMAIL
+          value: {{ .Values.env.ADMIN_EMAIL }}
+        - name: ADMIN_PASSWORD
+          value: {{ .Values.env.ADMIN_PASSWORD }}
+      restartPolicy: Never

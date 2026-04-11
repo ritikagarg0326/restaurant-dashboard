@@ -1,0 +1,22 @@
+namespace: restaurant-dev
+replicaCount: 2
+
+backend:
+  image: restaurant-dashboard-backend
+  tag: latest
+  port: 8000
+
+frontend:
+  image: restaurant-dashboard-frontend
+  tag: latest
+  port: 80
+
+mongo:
+  image: mongo:7.0
+  port: 27017
+
+env:
+  MONGO_URI: mongodb://mongo:27017
+  ADMIN_EMAIL: myhp@123.com
+  ADMIN_PASSWORD: myhp@123
+  ALLOWED_ORIGINS: "http://localhost:4300,http://localhost:4200"

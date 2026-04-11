@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: {{ .Values.backend.image }}:{{ .Values.backend.tag }}
+        ports:
+        - containerPort: {{ .Values.backend.port }}
+        env:
+        - name: MONGO_URI
+          value: {{ .Values.env.MONGO_URI }}
+        - name: ADMIN_EMAIL
+          value: {{ .Values.env.ADMIN_EMAIL }}
+        - name: ADMIN_PASSWORD
+          value: {{ .Values.env.ADMIN_PASSWORD }}
+        - name: ALLOWED_ORIGINS
+          value: {{ .Values.env.ALLOWED_ORIGINS }}
