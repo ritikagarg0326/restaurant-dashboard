@@ -16,7 +16,24 @@ mongo:
   port: 27017
 
 env:
-  MONGO_URI: mongodb://mongo:27017
+  MONGO_URI:  mongodb://mongo.restaurant-dev.svc.cluster.local:27017
   ADMIN_EMAIL: myhp@123.com
   ADMIN_PASSWORD: myhp@123
   ALLOWED_ORIGINS: "http://localhost:4300,http://localhost:4200"
+
+grafana:
+  grafana.ini:
+    smtp:
+      enabled: true
+      host: smtp.gmail.com:587
+      user: $__file{/etc/secrets/user}
+      password: $__file{/etc/secrets/password}
+      from_address: rvero1901@gmail.com
+      from_name: Grafana
+      skip_verify: true
+
+  extraSecretMounts:
+    - name: smtp-secret
+      secretName: grafana-smtp
+      mountPath: /etc/secrets
+      readOnly: true
