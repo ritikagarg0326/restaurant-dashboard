@@ -7,6 +7,10 @@ Production-ready restaurant management system with real-time order tracking, inv
 <img src="images/railway-deploy-metric1.png" width="300"/>
 <img src="images/railway-deploy-metric2.png" width="300"/>
 <img src="images/railway-deploy-metric3.png" width="300"/>
+<img src="images/grafana.png" width="300"/>
+<img src="images/grafana2.png" width="300"/>
+<img src="images/grafana3.png" width="300"/>
+<img src="images/grafana4.png" width="300"/>
 ## 🚀 Quick Start (Local Dev)
 
 ### Prerequisites
