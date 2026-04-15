@@ -144,4 +144,4 @@ jobs:
           git config --global user.name "GitHub Actions"
           git add restaurant-chart/values.yaml
           git commit -m "ci: update image tags to ${{ steps.vars.outputs.SHA }}"
-          git push
+          git push https://${{ secrets.TOKEN }}@github.com/ritikagarg0326/restaurant-dashboard.git
