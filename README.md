@@ -11,7 +11,7 @@ Production-ready restaurant management system with real-time order tracking, inv
 <img src="images/grafana2.png" width="300"/>
 <img src="images/grafana3.png" width="300"/>
 <img src="images/grafana4.png" width="300"/>
-## 🚀 Quick Start (Local Dev)
+##  Quick Start (Local Dev)
 
 ### Prerequisites
 - Python 3.10+
