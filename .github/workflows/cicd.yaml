@@ -11,11 +11,11 @@ env:
   BACKEND_IMAGE: restaurant-backend
   FRONTEND_IMAGE: restaurant-frontend
 
+jobs:
+
 # ─────────────────────────────
 # JOB 1 — LINT
 # ─────────────────────────────
-jobs:
-
   lint:
     name: 🔍 Lint Code
     runs-on: ubuntu-latest
@@ -24,14 +24,12 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Backend lint (Python)
       - name: Lint Backend
         run: |
           cd backend
           pip install flake8 --quiet
           flake8 . --max-line-length=120 || true
 
-      # Frontend lint (Angular)
       - name: Lint Frontend
         run: |
           cd frontend
@@ -41,7 +39,6 @@ jobs:
 # ─────────────────────────────
 # JOB 2 — TEST
 # ─────────────────────────────
-
   test:
     name: 🧪 Run Tests
     runs-on: ubuntu-latest
@@ -51,7 +48,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # Backend tests
       - name: Test Backend
         run: |
           cd backend
@@ -59,7 +55,6 @@ jobs:
           pip install pytest --quiet
           pytest || true
 
-      # Frontend build test (Angular doesn’t always have tests)
       - name: Build Frontend
         run: |
           cd frontend
@@ -69,7 +64,6 @@ jobs:
 # ─────────────────────────────
 # JOB 3 — BUILD & PUSH DOCKER
 # ─────────────────────────────
-
   docker:
     name: 🐳 Build & Push Images
     runs-on: ubuntu-latest
@@ -92,7 +86,6 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Backend Image
       - name: Build & Push Backend
         uses: docker/build-push-action@v6
         with:
@@ -102,7 +95,6 @@ jobs:
             ${{ env.DOCKER_USERNAME }}/${{ env.BACKEND_IMAGE }}:${{ steps.vars.outputs.SHA }}
             ${{ env.DOCKER_USERNAME }}/${{ env.BACKEND_IMAGE }}:latest
 
-      # Frontend Image
       - name: Build & Push Frontend
         uses: docker/build-push-action@v6
         with:
@@ -113,14 +105,17 @@ jobs:
             ${{ env.DOCKER_USERNAME }}/${{ env.FRONTEND_IMAGE }}:latest
 
 # ─────────────────────────────
-# JOB 4 — UPDATE HELM CHART VALUES
+# JOB 4 — UPDATE HELM CHART
 # ─────────────────────────────
-
   update-helm-chart:
     name: 📦 Update Helm Chart Tag
     runs-on: ubuntu-latest
     needs: docker
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+
+    # 🔥 STOP INFINITE LOOP HERE
+    if: github.ref == 'refs/heads/main' &&
+        github.event_name == 'push' &&
+        !contains(github.event.head_commit.message, 'ci: update image tags')
 
     steps:
       - name: Checkout Repository
@@ -132,7 +127,6 @@ jobs:
         id: vars
         run: echo "SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
 
-      # 🔥 Update ONLY backend + frontend tags
       - name: Update Helm values.yaml
         run: |
           sed -i "/backend:/,/tag:/ s/tag: .*/tag: \"${{ steps.vars.outputs.SHA }}\"/" restaurant-chart/values.yaml
@@ -143,5 +137,8 @@ jobs:
           git config --global user.email "ritikagarg60814@gmail.com"
           git config --global user.name "GitHub Actions"
           git add restaurant-chart/values.yaml
-          git commit -m "ci: update image tags to ${{ steps.vars.outputs.SHA }}"
+
+          # Only commit if changes exist
+          git diff --quiet && echo "No changes to commit" || git commit -m "ci: update image tags to ${{ steps.vars.outputs.SHA }} [skip ci]"
+
           git push https://${{ secrets.TOKEN }}@github.com/ritikagarg0326/restaurant-dashboard.git
