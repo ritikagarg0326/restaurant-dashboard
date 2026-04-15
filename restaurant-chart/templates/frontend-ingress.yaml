@@ -5,10 +5,6 @@ metadata:
   namespace: restaurant-dev
   annotations:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$ {
-        try_files $uri $uri/ =404;
-      }
 spec:
   ingressClassName: nginx
   rules:
