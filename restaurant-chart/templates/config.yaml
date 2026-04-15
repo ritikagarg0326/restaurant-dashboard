@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-env
+  namespace: restaurant-dev
+data:
+  env.js: |
+    window.__env = {
+      apiUrl: "/api/v1"
+    };

@@ -16,7 +16,7 @@ RUN npm run build:prod
 
 # ----------- Serve Stage -----------
 FROM nginx:alpine
-
+COPY env.js /usr/share/nginx/html/env.js
 # Remove default nginx files
 RUN rm -rf /usr/share/nginx/html/*
 
