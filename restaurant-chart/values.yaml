@@ -3,12 +3,12 @@ replicaCount: 2
 
 backend:
   image: restaurant-dashboard-backend
-  tag: "bd552e6"
+  tag: "9854d5c"
   port: 8000
 
 frontend:
   image: restaurant-dashboard-frontend
-  tag: "bd552e6"
+  tag: "9854d5c"
   port: 80
 
 mongo:
