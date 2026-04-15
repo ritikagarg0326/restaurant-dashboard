@@ -15,15 +15,21 @@ RUN npm run build:prod
 
 
 # ----------- Serve Stage -----------
+# ----------- Serve Stage -----------
 FROM nginx:alpine
-COPY env.js /usr/share/nginx/html/env.js
-# Remove default nginx files
-RUN rm -rf /usr/share/nginx/html/*
+
+# ✅ REMOVE default config FIRST
+RUN rm /etc/nginx/conf.d/default.conf
+
+# ✅ COPY your nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-# Copy Angular build output
+
+# Copy Angular build
 COPY --from=build /app/dist/restaurant-dashboard/browser /usr/share/nginx/html
 
-# Expose port
+# Copy env
+COPY env.js /usr/share/nginx/html/env.js
+
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
