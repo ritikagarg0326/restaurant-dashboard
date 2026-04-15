@@ -29,7 +29,7 @@ import { AuthService } from '../../services/auth.service';
 
         <form (ngSubmit)="onLogin()">
           <div class="form-group">
-            <label class="form-label">Email Address</label>
+            <label class="form-label">Enter your Email Address</label>
             <input
               type="email"
               class="form-control"
