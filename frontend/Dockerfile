@@ -19,7 +19,7 @@ FROM nginx:alpine
 COPY env.js /usr/share/nginx/html/env.js
 # Remove default nginx files
 RUN rm -rf /usr/share/nginx/html/*
-
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 # Copy Angular build output
 COPY --from=build /app/dist/restaurant-dashboard/browser /usr/share/nginx/html
 

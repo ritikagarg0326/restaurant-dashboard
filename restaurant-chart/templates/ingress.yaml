@@ -13,7 +13,7 @@ spec:
     http:
       paths:
 
-      # Backend (strip /api)
+      # Backend
       - path: /api(/|$)(.*)
         pathType: ImplementationSpecific
         backend:
@@ -22,9 +22,9 @@ spec:
             port:
               number: 8000
 
-      # Frontend
-      - path: /
-        pathType: Prefix
+      # Frontend (NO rewrite)
+      - path: /(.*)
+        pathType: ImplementationSpecific
         backend:
           service:
             name: frontend
