@@ -3,14 +3,20 @@
 Production-ready restaurant management system with real-time order tracking, inventory, expenses, and P&L analytics.
 
 ---
-<img src="images/railway-deploy-metric4.png" width="300"/>
-<img src="images/railway-deploy-metric1.png" width="300"/>
-<img src="images/railway-deploy-metric2.png" width="300"/>
-<img src="images/railway-deploy-metric3.png" width="300"/>
-<img src="images/grafana.png" width="300"/>
-<img src="images/grafana2.png" width="300"/>
-<img src="images/grafana3.png" width="300"/>
-<img src="images/grafana4.png" width="300"/>
+<div align="center">
+  <img src="images/railway-deploy-metric4.png" width="250"/>
+  <img src="images/railway-deploy-metric1.png" width="250"/>
+  <img src="images/railway-deploy-metric2.png" width="250"/>
+  <img src="images/railway-deploy-metric3.png" width="250"/>
+  <br/>
+  <img src="images/grafana.png" width="250"/>
+  <img src="images/grafana2.png" width="250"/>
+  <img src="images/grafana3.png" width="250"/>
+  <img src="images/grafana4.png" width="250"/>
+  <img src="images/11.png" width="250"/>
+  <img src="images/12.png" width="250"/>
+  <img src="images/13.png" width="250"/>
+</div>
 ##  Quick Start (Local Dev)
 
 ### Prerequisites
