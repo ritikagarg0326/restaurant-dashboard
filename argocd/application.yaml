@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: restaurant-app
+  namespace: argocd
+spec:
+  project: restaurant-project
+
+  source:
+    repoURL: https://github.com/ritikagarg0326/restaurant-dashboard.git
+    targetRevision: HEAD
+    path: restaurant-chart/
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: restaurant-dev
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
