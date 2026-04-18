@@ -1,6 +1,6 @@
 # 🍽️ RestaurantOS — Multi-Outlet Profit & Loss Management Dashboard
 
-> **Production-ready** restaurant management system with real-time order tracking, inventory, expenses, and P&L analytics — deployed on Kubernetes with full GitOps, observability, and CI/CD automation.
+> **Production-ready** restaurant management system with real-time order tracking, inventory, expenses, and P&L analytics deployed on Kubernetes with full GitOps, observability, and CI/CD automation.
 
 ---
 
